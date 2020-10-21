@@ -11,13 +11,6 @@
 }
 
 @font-face {
-	font-family: 'Karnak';
-	font-style: normal;
-	font-weight: 700;
-	src: url('../fonts/karnak-normal-700.woff2') format('woff2');
-}
-
-@font-face {
 	font-family: 'Franklin';
 	font-weight: 300;
 	font-style: normal;
@@ -35,16 +28,14 @@ html, body {
 nav {
 	padding-top: 5px !important;
 	padding-bottom: 10px !important;
-	font-family: 'Karnak';
 	margin: 30px 200px;
 	border-bottom: 1px solid #bfbfbf;
 }
 
-.logo { font-family: 'Karnak'; }
-
 h2 { font-size: 42px; }
 
 .alr {
+	vertical-align: middle;
 	display: inline-block;
 	margin-left: 10px;
 	font-family: 'Franklin';
