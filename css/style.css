@@ -26,11 +26,12 @@ html, body {
 }
 
 nav {
-	padding-top: 5px !important;
 	padding-bottom: 10px !important;
 	margin: 30px 200px;
 	border-bottom: 1px solid #bfbfbf;
 }
+
+.navbar { padding: 0 1rem !important; }
 
 h2 { font-size: 42px; }
 
@@ -91,6 +92,8 @@ h2 { font-size: 42px; }
 	margin: 0 14px 14px 0;
 }
 
+.h-btn { margin-left: 16px; }
+
 .btn-pad {
 	height: 70px;
 	background-color: #e6e6e6;
@@ -144,6 +147,35 @@ h2 { font-size: 42px; }
 .active { background: #FFDA00 !important; }
 
 .hidden { display: none; }
+
+.nav-panel {
+	display: flex;
+    flex-direction: row;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.nav-item {
+	margin: 0 10px;
+	color: #565656;
+	cursor: pointer;
+	padding: 12px 0;
+	text-transform: uppercase;
+}
+
+.text-input {
+	border-radius: 0;
+	border: 1px solid #959595;
+	margin-top: 20px;
+	width: 90%;
+	padding: 4px 12px;
+	resize: none;
+}
+
+.nav-item:hover { color: #000; }
+
+#download-link { display: none; }
 
 .square td {
 	box-sizing: content-box;
@@ -199,7 +231,7 @@ h2 { font-size: 42px; }
 
 .noted { color: #000 !important; }
 
-.closed { display: none; }
+.closed, .hidden { display: none; }
 
 .digit {
 	display: inline-block;

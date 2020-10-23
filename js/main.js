@@ -234,7 +234,161 @@ $(document).ready(function() {
 		fixed = !fixed;
 	});
 
+	$('.h-btn').click(() => {
+		message("Insert the clues in the grid and press set clues to start or load a project.");
+	});
+
+	$('.s-project').click(() => {
+		let project = {
+			mode: fixed,
+			active: {
+				r: parseInt(y) + 1,
+				c: parseInt(x) + 1
+			},
+			clues: [],
+			notes: [],
+			digits: []
+		};
+		$('.clue').each(function() {
+			project.clues.push({
+				r: parseInt($(this).attr('y')) + 1,
+				c: parseInt($(this).attr('x')) + 1,
+				clue: parseInt(
+					$(this).children('.clue-text').eq(0).text()
+				)
+			});
+		});
+		$('.annotation').each((i, a) => {
+			const notes = $(a).find('.noted');
+			if (!notes.length) return;
+			const parent = $(a).parents('td[x]').eq(0);
+			let numbers = [];
+			notes.each((i, n) => {
+				numbers.push(parseInt($(n).text()));
+			});
+			project.notes.push({
+				r: parseInt(parent.attr('y')) + 1,
+				c: parseInt(parent.attr('x')) + 1,
+				noted: numbers
+			});
+		});
+		$('.digit').each(function() {
+			if (!$(this).text().length) return;
+			const parent = $(this).parents('td[x]').eq(0);
+			project.digits.push({
+				r: parseInt(parent.attr('y')) + 1,
+				c: parseInt(parent.attr('x')) + 1,
+				digit: parseInt($(this).text())
+			});
+		});
+		project = JSON.stringify(project);
+		$('#download-link').attr(
+			'href',
+			'data:text/json;charset=utf-8,' +
+			encodeURIComponent(project)
+		);
+		$('#download-link').attr('download', 'Classic Doku.json');
+		// Only trigger that works:
+		document.getElementById('download-link').click();
+	});
+
+	$('.l-project').click(() => {
+		document.getElementById("load-btn").click();
+	});
+
+	$('#load-btn').on('change', function(e) {
+		if (e.target.files && e.target.files[0]) {
+			e.target.files[0].text().then((json) => {
+				loadProject(JSON.parse(json));
+			});
+		}
+	});
+
+	$('#doku-string').on('keypress', function(e) {
+		return e.charCode > 47 && e.charCode < 58;
+	});
+
+	$('#string-btn').click(() => {
+		let dokuString = '';
+		for (let i = 0; i < 9; i++) {
+			for (let j = 0; j < 9; j++) {
+				if (!dokuBoard[i][j]) {
+					dokuString += '0';
+					continue;
+				}
+				if ($(`td[x="${ j }"][y="${ i }"]`).hasClass('clue')) {
+					dokuString += dokuBoard[i][j].toString();
+					continue;
+				}
+				dokuString += '0';
+			}
+		}
+		$('#doku-string').val(dokuString);
+		$('#modal-string').modal();
+	});
+
 });
+
+function loadProject(project) {
+	$('.clue').removeClass('clue');
+	$('.clue-text').text('');
+	$('.digit').text('');
+	$('.noted').removeClass('noted');
+	$('.annotation').removeClass('closed');
+	dokuBoard = [
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+	];
+	$('.active').removeClass('active');
+	x = project.active.c - 1;
+	y = project.active.r - 1;
+	$(`td[x="${ x }"][y="${ y }"]`).addClass('active');
+	if (project.mode) {
+		// Fixed mode:
+		if (!fixed) {
+			fixed = true;
+			$('.e-pad').text('EDIT CLUES');
+			$('.s-pad').prop('disabled', false);
+		}
+		for (const clue of project.clues) {
+			const current = $(`td[x="${ clue.c - 1 }"][y="${ clue.r - 1 }"]`);
+			current.addClass('clue');
+			current.children('.annotation').addClass('closed');
+			current.children('.clue-text').text(clue.clue);
+		}
+	} else {
+		// Edit mode:
+		if (fixed) {
+			fixed = false;
+			$('.e-pad').text('SET CLUES');
+			$('.s-pad').prop('disabled', true);
+		}
+	}
+	for (const digit of project.digits) {
+		const current = $(`td[x="${ digit.c - 1 }"][y="${ digit.r - 1 }"]`);
+		current.children('.annotation').addClass('closed');
+		current.children('.digit').text(digit.digit);
+	}
+	for (const note of project.notes) {
+		const current = $(`td[x="${ note.c - 1 }"][y="${ note.r - 1 }"]`);
+		const tds = current.find('.annotation td');
+		for (const n of note.noted) {
+			for (const td of tds) {
+				if ($(td).text() == n) {
+					$(td).addClass('noted');
+					break;
+				}
+			}
+		}
+	}
+}
 
 // Are there more than one solutions?
 function checkMultiple(board) {

@@ -25,6 +25,16 @@
 				<img class="d-inline-block" width="90" src="images/doku.svg">
 				<span class="alr">Maker, Helper, Solver</span>
 			</div>
+			<div class="form-inline">
+				<div class="navbar-collapse">
+					<ul class="nav-panel">
+						<li class="nav-item l-project">Load Project</li>
+						<li class="nav-item s-project">Save Project</li>
+						<li class="nav-item" id="string-btn">Doku String</li>
+						<li><button class="btn-pad h-btn">?</button></li>
+					</ul>
+				</div>
+			</div>
 		</nav>
 
 		<div class="row">
@@ -36,7 +46,7 @@
 			</div>
 		</div>
 
-		<div class="modal fade" id="modal-solve" tabindex="-1" role="dialog" aria-labelledby="modal-solve" aria-hidden="true">
+		<div class="modal fade" id="modal-solve" tabindex="-1" role="dialog">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -56,6 +66,31 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="modal fade" id="modal-string" tabindex="-1" role="dialog">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h3 class="modal-title">
+							<div class="navbar-brand">
+								<img class="d-inline-block" width="80" src="images/doku.svg">
+								<span class="alr">Maker, Helper, Solver</span>
+							</div>
+						</h3>
+					</div>
+					<div class="modal-body">
+						<span id="solver-text">Current doku string:</span>
+						<textarea class="text-input" id="doku-string" rows="3" disabled></textarea>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn-pad" data-dismiss="modal">OK</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<input type="file" accept="text/json" class="hidden" id="load-btn">
+		<a id="download-link"></a>
 
 	</body>
 </html>
