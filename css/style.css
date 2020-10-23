@@ -136,10 +136,10 @@ h2 { font-size: 42px; }
 	border: 2px solid #959595;
 }
 
-.square[sx="0"] { border-left: 0; }
-.square[sy="0"] { border-top: 0; }
-.square[sx="2"] { border-right: 0; }
-.square[sy="2"] { border-bottom: 0; }
+.square[sx="0"], td[x="0"] { border-left: 0 !important; }
+.square[sy="0"], td[y="0"] { border-top: 0 !important; }
+.square[sx="2"], td[x="8"] { border-right: 0 !important; }
+.square[sy="2"], td[y="8"] { border-bottom: 0 !important; }
 
 .active { background: #FFDA00 !important; }
 
