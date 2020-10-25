@@ -25,13 +25,7 @@ html, body {
 	overflow: hidden;
 }
 
-nav {
-	padding-bottom: 10px !important;
-	margin: 30px 200px;
-	border-bottom: 1px solid #bfbfbf;
-}
-
-.navbar { padding: 0 1rem !important; }
+nav { padding: 30px 200px !important; }
 
 h2 { font-size: 42px; }
 
@@ -143,6 +137,20 @@ h2 { font-size: 42px; }
 .square[sy="0"], td[y="0"] { border-top: 0 !important; }
 .square[sx="2"], td[x="8"] { border-right: 0 !important; }
 .square[sy="2"], td[y="8"] { border-bottom: 0 !important; }
+
+td[x]::after {
+	content: '';
+	background: #ff4b56;
+	position: absolute;
+	border-radius: 50%;
+	width: 14px;
+	height: 14px;
+	bottom: 7px;
+	right: 7px;
+	transform: scale3d(0, 0, 0);
+	transition: transform 250ms 100ms cubic-bezier(0.5, 2, 0.5, 1);
+}
+.conflict::after { transform: scale3d(1, 1, 1) !important; }
 
 .active { background: #FFDA00 !important; }
 

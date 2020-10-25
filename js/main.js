@@ -162,6 +162,7 @@ $(document).ready(function() {
 			if ($(this).hasClass('clue')) return;
 			$(this).children('.annotation').removeClass('closed');
 		});
+		$('.conflict').removeClass('conflict');
 	});
 
 	$('.s-pad').on('click', function() {
@@ -187,6 +188,7 @@ $(document).ready(function() {
 			dokuBoard = board;
 			$('.noted').removeClass('noted');
 			message('Solved successfully!');
+			$('.conflict').removeClass('conflict');
 			return;
 		}
 		message('This puzzle appears to have no solution!');
@@ -212,7 +214,7 @@ $(document).ready(function() {
 				message('This puzzle has more than one unique solution!');
 			}
 			if (isValidBoard(board) && solver(board) && check(board)) {
-				// valid clues:
+				// Valid clues:
 				for (let i = 0; i < 9; i += 1) {
 					for (let j = 0; j < 9; j += 1) {
 						if (dokuBoard[i][j] != 0) {
@@ -308,23 +310,9 @@ $(document).ready(function() {
 		return e.charCode > 47 && e.charCode < 58;
 	});
 
-	$('#string-btn').click(() => {
-		let dokuString = '';
-		for (let i = 0; i < 9; i++) {
-			for (let j = 0; j < 9; j++) {
-				if (!dokuBoard[i][j]) {
-					dokuString += '0';
-					continue;
-				}
-				if ($(`td[x="${ j }"][y="${ i }"]`).hasClass('clue')) {
-					dokuString += dokuBoard[i][j].toString();
-					continue;
-				}
-				dokuString += '0';
-			}
-		}
-		$('#doku-string').val(dokuString);
-		$('#modal-string').modal();
+	$('#download-btn').click(() => {
+
+		$('#modal-download').modal();
 	});
 
 });
@@ -388,6 +376,7 @@ function loadProject(project) {
 			}
 		}
 	}
+	updateConflicts();
 }
 
 // Are there more than one solutions?
@@ -410,73 +399,33 @@ function checkMultiple(board) {
 	return false;
 }
 
+// Is k valid in position [ x, y ]
+function isValid(b, x, y, k) {
+	const t = b[y][x];
+	b[y][x] = 0;
+	for (let i = 0; i < 9; i++) {
+		const m = 3 * Math.floor(y / 3) + Math.floor(i / 3);
+		const n = 3 * Math.floor(x / 3) + i % 3;
+		if (b[y][i] == k || b[i][x] == k || b[m][n] == k) {
+			b[y][x] = t;
+			return false;
+		}
+	}
+	b[y][x] = t;
+	return true;
+}
 // Is it a pseudo valid board?
 function isValidBoard(board) {
-	const isValidSudoku = (board) => {
-		const obj = { 
-			rows: { },    // 9 rows, each containing 9 cells across
-			columns: { }, // 9 columns, each containing 9 cells down
-			blocks: { },  // 9 blocks, each containing 3x3 cells inside
-		};
-		let isValid = true;
-		loop1:
-		for (let r = 0; r < board.length; r++) {
-			for (let c = 0; c < board[r].length; c++) {
-				const cellValue = board[r][c];
-				if (cellValue == 0) continue;
-				// 1: validate rows
-				if (!obj.rows.hasOwnProperty(r)) {
-					obj.rows[r] = { };
-				}
-				if (obj.rows[r].hasOwnProperty(cellValue)) {
-					isValid = false;
-					break loop1;
-				} else obj.rows[r][cellValue] = null;
-				// 2: validate columns
-				if (!obj.columns.hasOwnProperty(c)) {
-					obj.columns[c] = {};
-				}
-				if (obj.columns[c].hasOwnProperty(cellValue)) {
-					isValid = false;
-					break loop1;
-				} else obj.columns[c][cellValue] = null;
-				// 3: validate grid
-				const b = getBlockNumber(r, c);
-				if (!obj.blocks.hasOwnProperty(b)) {
-					obj.blocks[b] = { };
-				}
-				if (obj.blocks[b].hasOwnProperty(cellValue)) {
-					isValid = false;
-					break loop1;
-				} else obj.blocks[b][cellValue] = null;
+	for (let i = 0; i < 9; i++) {
+		for (let j = 0; j < 9; j++) {
+			if (!board[i][j]) continue;
+			if (!isValid(board, j, i, board[i][j])) {
+				return false;
 			}
 		}
-		
-		return isValid;
-	};
-	// if row = 8 & column = 5
-	// then quotients = 2, 1
-	// therefore blockNumber = 8
-	const getBlockNumber = (row, column) => {
-		const rowQuotient = parseInt(row / 3, 10);
-		const columnQuotient = parseInt(column / 3, 10);
-		let blockNumber;
-		switch(`${rowQuotient}${columnQuotient}`) {
-			case '00': blockNumber = 0; break;
-			case '01': blockNumber = 1; break;
-			case '02': blockNumber = 2; break;
-			case '10': blockNumber = 3; break;
-			case '11': blockNumber = 4; break;
-			case '12': blockNumber = 5; break;
-			case '20': blockNumber = 6; break;
-			case '21': blockNumber = 7; break;
-			case '22': blockNumber = 8; break;
-		};
-		return blockNumber;
-	};
-	return isValidSudoku(board);
+	}
+	return true;
 }
-
 // Solve for me please!
 function solver(data) {
 	const shuffle = (a) => {
@@ -489,25 +438,14 @@ function solver(data) {
 			a[n] = t;
 		}
 	}
-	const isValid = (b, r, c, k) => {
-		for (let i = 0; i < 9; i += 1) {
-			const m = 3 * Math.floor(r / 3) + Math.floor(i / 3);
-			const n = 3 * Math.floor(c / 3) + i % 3;
-			if (b[r][i] == k || b[i][c] == k || b[m][n] == k) {
-				return false;
-			}
-		}
-		return true;
-	};
 	let n = [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ];
 	for (let i = 0; i < 9; i++) {
 		for (let j = 0; j < 9; j++) {
 			if (data[i][j] == 0) {
 				shuffle(n);
 				for (let k = 0; k < 9; k++) {
-					const w = n[k];
-					if (isValid(data, i, j, w)) {
-						data[i][j] = w;
+					if (isValid(data, j, i, n[k])) {
+						data[i][j] = n[k];
 						if (solver(data)) return true;
 						data[i][j] = 0;
 					}
@@ -518,7 +456,6 @@ function solver(data) {
 	}
 	return true;
 }
-
 // Did I win?
 function check(board) {
 	if (board === undefined) board = dokuBoard;
@@ -550,7 +487,6 @@ function check(board) {
 	}
 	return testRows(board) && testColumns(board) && testSquares(board);
 }
-
 // Is it full?
 function isFull() {
 	return dokuBoard.every(
@@ -558,16 +494,48 @@ function isFull() {
 	);
 }
 
+function updateConflicts() {
+	let conflicts = [
+		[ false, false, false, false, false, false, false, false, false ],
+		[ false, false, false, false, false, false, false, false, false ],
+		[ false, false, false, false, false, false, false, false, false ],
+		[ false, false, false, false, false, false, false, false, false ],
+		[ false, false, false, false, false, false, false, false, false ],
+		[ false, false, false, false, false, false, false, false, false ],
+		[ false, false, false, false, false, false, false, false, false ],
+		[ false, false, false, false, false, false, false, false, false ],
+		[ false, false, false, false, false, false, false, false, false ]
+	];
+	for (let i = 0; i < 9; i++) {
+		for (let j = 0; j < 9; j++) {
+			if (!dokuBoard[i][j]) continue;
+			if (!isValid(dokuBoard, j, i, dokuBoard[i][j])) {
+				conflicts[i][j] = true;
+			}
+		}
+	}
+	for (let i = 0; i < 9; i++) {
+		for (let j = 0; j < 9; j++) {
+			if (conflicts[i][j]) {
+				$(`td[x="${ j }"][y="${ i }"]`).addClass('conflict');
+			} else {
+				$(`td[x="${ j }"][y="${ i }"]`).removeClass('conflict');
+			}
+		}
+	}
+}
+
 function placeDigit(d) {
 	dokuBoard[y][x] = parseInt(d);
+	updateConflicts();
 	if (isFull() && check()) {
 		win.play();
 		message('Congratulations, you did it!');
 	}
 }
-
 function removeDigit() {
 	dokuBoard[y][x] = 0;
+	updateConflicts();
 }
 
 function getPosition(element) {
@@ -577,7 +545,6 @@ function getPosition(element) {
 		y: parent.attr('y')
 	};
 }
-
 function isHighlighted(element) {
 	return $(element).parents('td[x]')
 		   .eq(0).hasClass('active');
@@ -599,7 +566,6 @@ function loadPad() {
 	html += `<button class="e-pad btn-pad">${ fixed ? 'EDIT CLUES' : 'SET CLUES' }</button>`;
 	container.append($(html));
 }
-
 function loadBoard() {
 	dokuBoard = [
 		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
@@ -644,7 +610,6 @@ function createTable(row, col, board) {
 	}
 	return html + '</table>';
 }
-
 function createAnnotation(closed) {
 	let html = `<table class="annotation${ closed ? ' closed' : '' }">`;
 	for (let i = 0; i < 3; i += 1) {

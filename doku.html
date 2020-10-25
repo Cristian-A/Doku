@@ -30,7 +30,7 @@
 					<ul class="nav-panel">
 						<li class="nav-item l-project">Load Project</li>
 						<li class="nav-item s-project">Save Project</li>
-						<li class="nav-item" id="string-btn">Doku String</li>
+						<!--li class="nav-item" id="download-btn">Download</li-->
 						<li><button class="btn-pad h-btn">?</button></li>
 					</ul>
 				</div>
@@ -67,7 +67,7 @@
 			</div>
 		</div>
 
-		<div class="modal fade" id="modal-string" tabindex="-1" role="dialog">
+		<div class="modal fade" id="modal-download" tabindex="-1" role="dialog">
 			<div class="modal-dialog modal-dialog-centered" role="document">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -79,11 +79,12 @@
 						</h3>
 					</div>
 					<div class="modal-body">
-						<span id="solver-text">Current doku string:</span>
-						<textarea class="text-input" id="doku-string" rows="3" disabled></textarea>
+						<span id="solver-text">Download the final doku.</span>
 					</div>
 					<div class="modal-footer">
-						<button type="button" class="btn-pad" data-dismiss="modal">OK</button>
+						<button type="button" class="btn-pad">PDF</button>
+						<button type="button" class="btn-pad">SVG</button>
+						<button type="button" class="btn-pad" data-dismiss="modal">CLOSE</button>
 					</div>
 				</div>
 			</div>
