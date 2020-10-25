@@ -350,6 +350,7 @@ function loadProject(project) {
 			current.addClass('clue');
 			current.children('.annotation').addClass('closed');
 			current.children('.clue-text').text(clue.clue);
+			dokuBoard[clue.r - 1][clue.c - 1] = clue.clue;
 		}
 	} else {
 		// Edit mode:
@@ -363,6 +364,7 @@ function loadProject(project) {
 		const current = $(`td[x="${ digit.c - 1 }"][y="${ digit.r - 1 }"]`);
 		current.children('.annotation').addClass('closed');
 		current.children('.digit').text(digit.digit);
+		dokuBoard[digit.r - 1][digit.c - 1] = digit.digit;
 	}
 	for (const note of project.notes) {
 		const current = $(`td[x="${ note.c - 1 }"][y="${ note.r - 1 }"]`);
