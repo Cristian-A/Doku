@@ -379,6 +379,7 @@ function loadProject(project) {
 		}
 	}
 	updateConflicts();
+	$('#load-btn').val('');
 }
 
 // Are there more than one solutions?
