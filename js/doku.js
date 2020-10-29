@@ -9,12 +9,12 @@ function checkMultiple(board) {
 		}
 	}
 	if (clues < 17) return true;
-	let solve = board.map((a) => { return a.slice(); });
-	solver(solve); solve = JSON.stringify(solve);
+	let solved = board.map((a) => { return a.slice(); });
+	solve(solved); solved = JSON.stringify(solved);
 	for (let i = 0; i < 5; i++) {
 		let temp = board.map((a) => { return a.slice(); });
-		solver(temp); temp = JSON.stringify(temp);
-		if (temp != solve) return true;
+		solve(temp); temp = JSON.stringify(temp);
+		if (temp != solved) return true;
 	}
 	return false;
 }

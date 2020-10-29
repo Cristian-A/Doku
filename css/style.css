@@ -25,6 +25,8 @@ html, body {
 	overflow: hidden;
 }
 
+table { table-layout: fixed !important; }
+
 nav { padding: 40px 200px !important; }
 
 h2 { font-size: 42px; }
@@ -110,6 +112,8 @@ h2 { font-size: 42px; }
 	background-position: center;
 }
 
+a.btn-pad { padding: 9px 20px; }
+
 #board {
 	cursor: default;
 	user-select: none;
@@ -188,6 +192,8 @@ td[x]::after {
 	font-size: 50px;
 	height: 80px;
 	width: 80px;
+	min-height: 80px;
+	min-width: 80px;
 	color: #000;
 	overflow: hidden;
 	font-weight: bold;
@@ -283,4 +289,23 @@ td[x]::after {
 .modal-footer {
 	padding: 18px 30px 24px 30px !important;
 	border-top: 1px solid #bfbfbf !important;
+}
+
+@media print {
+	#pad-container, nav,
+	.annotation, .digit {
+		display: none !important;
+	}
+	.active, .clue-text, .clue {
+		background-color: transparent !important;
+		border: none !important;
+	}
+	#container {
+		margin: 400px 250px !important;
+	}
+	td[x] {
+		display: table-cell !important;
+		width: 80px !important;
+		height: 80px !important;
+	}
 }

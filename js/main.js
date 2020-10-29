@@ -166,13 +166,7 @@ $(document).ready(function() {
 	});
 
 	$('.s-pad').on('click', function() {
-		let board = Array(9).fill().map(() => Array(9).fill(0));
-		$('td[x]').each(function() {
-			if (!$(this).hasClass('clue')) return;
-			const x = parseInt($(this).attr('x'));
-			const y = parseInt($(this).attr('y'));
-			board[y][x] = dokuBoard[y][x];
-		});
+		let board = getClues();
 		if (isValidBoard(board) && solve(board)) {
 			if (!check(board)) {
 				message('This puzzle appears to have no solution!');
@@ -289,7 +283,6 @@ $(document).ready(function() {
 			'data:text/json;charset=utf-8,' +
 			encodeURIComponent(project)
 		);
-		$('#download-link').attr('download', 'Classic Doku.json');
 		// Only trigger that works:
 		document.getElementById('download-link').click();
 	});
@@ -306,15 +299,6 @@ $(document).ready(function() {
 		}
 	});
 
-	$('#doku-string').on('keypress', function(e) {
-		return e.charCode > 47 && e.charCode < 58;
-	});
-
-	$('#download-btn').click(() => {
-
-		$('#modal-download').modal();
-	});
-
 });
 
 function loadProject(project) {
@@ -323,17 +307,7 @@ function loadProject(project) {
 	$('.digit').text('');
 	$('.noted').removeClass('noted');
 	$('.annotation').removeClass('closed');
-	dokuBoard = [
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-	];
+	dokuBoard = Array(9).fill().map(() => Array(9).fill(0));
 	$('.active').removeClass('active');
 	x = project.active.c - 1;
 	y = project.active.r - 1;
@@ -382,18 +356,8 @@ function loadProject(project) {
 	$('#load-btn').val('');
 }
 
-function updateConflicts() {
-	let conflicts = [
-		[ false, false, false, false, false, false, false, false, false ],
-		[ false, false, false, false, false, false, false, false, false ],
-		[ false, false, false, false, false, false, false, false, false ],
-		[ false, false, false, false, false, false, false, false, false ],
-		[ false, false, false, false, false, false, false, false, false ],
-		[ false, false, false, false, false, false, false, false, false ],
-		[ false, false, false, false, false, false, false, false, false ],
-		[ false, false, false, false, false, false, false, false, false ],
-		[ false, false, false, false, false, false, false, false, false ]
-	];
+function getConflicts() {
+	let conflicts = Array(9).fill().map(() => Array(9).fill(false));
 	for (let i = 0; i < 9; i++) {
 		for (let j = 0; j < 9; j++) {
 			if (!dokuBoard[i][j]) continue;
@@ -402,6 +366,10 @@ function updateConflicts() {
 			}
 		}
 	}
+	return conflicts;
+}
+function updateConflicts() {
+	let conflicts = getConflicts();
 	for (let i = 0; i < 9; i++) {
 		for (let j = 0; j < 9; j++) {
 			if (conflicts[i][j]) {
@@ -426,6 +394,16 @@ function removeDigit() {
 	updateConflicts();
 }
 
+function getClues() {
+	let board = Array(9).fill().map(() => Array(9).fill(0));
+	$('td[x]').each(function() {
+		if (!$(this).hasClass('clue')) return;
+		const x = parseInt($(this).attr('x'));
+		const y = parseInt($(this).attr('y'));
+		board[y][x] = dokuBoard[y][x];
+	});
+	return board;
+}
 function getPosition(element) {
 	const parent = element.parents('td[x]').eq(0);
 	return {
@@ -455,33 +433,27 @@ function loadPad() {
 	container.append($(html));
 }
 function loadBoard() {
-	dokuBoard = [
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-		[ 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
-	];
+	dokuBoard = Array(9).fill().map(() => Array(9).fill(0));
 	let container = $('#container');
+	container.html(createDokuBoard(dokuBoard, true));
+	$('td[x="4"][y="4"]').addClass('active');
+}
+
+function createDokuBoard(board, noted) {
 	let html = '<table id="board">';
 	for (let i = 0; i < 3; i += 1) {
 		html += '<tr>';
 		for (let j = 0; j < 3; j += 1) {
 			html += '<td>';
-			html += createTable(i, j, dokuBoard);
+			html += createTable(i, j, board, noted);
 			html += '</td>';
 		}
 		html += '</tr>';
 	}
-	container.html(html + '</table>');
-	$('td[x="4"][y="4"]').addClass('active');
+	return html + '</table>';
 }
 
-function createTable(row, col, board) {
+function createTable(row, col, board, noted) {
 	let html = `<table class="square" sx="${ col }" sy="${ row }">`;
 	for (let i = 0; i < 3; i += 1) {
 		html += '<tr>';
@@ -490,9 +462,11 @@ function createTable(row, col, board) {
 			let y = row * 3 + i;
 			const clue = board[y][x] != 0;
 			html += `<td x="${ x }" y="${ y }"${ clue ? ' class="clue"' : '' }>`;
-			html += `<span class="digit"></span>`;
-			html += `<span class="clue-text">${ clue ? board[y][x] : '' }</span>`;
-			html += createAnnotation(clue) + '</td>';
+			if (noted) html += `<span class="digit"></span>`;
+			if (noted || clue) {
+				html += `<span class="clue-text">${ clue ? board[y][x] : '' }</span>`;
+			}
+			if (noted) html += createAnnotation(clue) + '</td>';
 		}
 		html += '</tr>';
 	}
