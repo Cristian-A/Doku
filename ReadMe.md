@@ -3,6 +3,8 @@
 
 Sudoku Maker, Helper, Solver.
 
+The demo page is https://cristian-a.github.io/Doku/
+
 You can use **Doku** to create your own classic sudoku or
 solve a sudoku you currently have on paper.
 
