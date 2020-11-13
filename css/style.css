@@ -225,6 +225,7 @@ td[x]::after {
 .annotation td {
 	background: transparent;
 	height: 24px;
+	width: 24px;
 	font-size: 16px;
 	text-align: center;
 	color: #5f5f5f;
